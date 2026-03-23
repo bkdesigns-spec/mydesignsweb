@@ -33,7 +33,7 @@ const colorThemes = [
   ['#1a0f13', '#28131a', '#ff4f79', '#45f0df', '#ffe066', '#8e7dff']
 ];
 
-let activeCategory = 'All';
+let activeCategory = 'all';
 let reducedMotion = false;
 
 const grid = document.getElementById('designGrid');
@@ -43,7 +43,19 @@ const shuffleBtn = document.getElementById('shuffleBtn');
 const toggleMotion = document.getElementById('toggleMotion');
 
 function getCategories() {
-  return ['All', ...new Set(designs.map((item) => normalizeCategory(item?.category)))];
+  const options = [{ key: 'all', label: 'All' }];
+  const seen = new Set(['all']);
+
+  designs.forEach((item) => {
+    const label = normalizeCategory(item?.category);
+    const key = getCategoryKey(label);
+    if (!seen.has(key)) {
+      seen.add(key);
+      options.push({ key, label });
+    }
+  });
+
+  return options;
 }
 
 function createCard(item) {
@@ -64,6 +76,19 @@ function createCard(item) {
       <span class="tag" style="background:${item.accent || '#7c4dff'}33; border:1px solid ${item.accent || '#7c4dff'}88">${category}</span>
     </div>
   `;
+
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+
+  const previewBtn = document.createElement('button');
+  previewBtn.type = 'button';
+  previewBtn.className = 'ghost-btn preview-btn';
+  previewBtn.textContent = embedUrl ? 'Preview' : 'No Preview';
+  previewBtn.disabled = !embedUrl;
+  previewBtn.addEventListener('click', () => openPreviewModal(embedUrl, item.title));
+  actions.appendChild(previewBtn);
+
+  article.appendChild(actions);
 
   return article;
 }
@@ -92,8 +117,15 @@ function normalizeCanvaEmbedUrl(url) {
 }
 
 function normalizeCategory(category) {
-  const value = String(category || '').trim();
-  return value || 'Uncategorized';
+  const value = String(category || '').trim().toLowerCase();
+  if (!value) {
+    return 'Uncategorized';
+  }
+  return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function getCategoryKey(categoryLabel) {
+  return String(categoryLabel || 'uncategorized').trim().toLowerCase();
 }
 
 function renderFilters() {
@@ -102,10 +134,10 @@ function renderFilters() {
   getCategories().forEach((category) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `filter-btn ${activeCategory === category ? 'active' : ''}`;
-    btn.textContent = category;
+    btn.className = `filter-btn ${activeCategory === category.key ? 'active' : ''}`;
+    btn.textContent = category.label;
     btn.addEventListener('click', () => {
-      activeCategory = category;
+      activeCategory = category.key;
       renderFilters();
       renderGrid();
     });
@@ -116,11 +148,64 @@ function renderFilters() {
 function renderGrid() {
   grid.innerHTML = '';
   const selected =
-    activeCategory === 'All'
+    activeCategory === 'all'
       ? designs
-      : designs.filter((item) => normalizeCategory(item?.category) === activeCategory);
+      : designs.filter((item) => getCategoryKey(normalizeCategory(item?.category)) === activeCategory);
 
   selected.forEach((item) => grid.appendChild(createCard(item)));
+}
+
+function openPreviewModal(embedUrl, title) {
+  if (!embedUrl) {
+    return;
+  }
+
+  const modal = document.getElementById('previewModal');
+  const frame = document.getElementById('previewFrame');
+  const heading = document.getElementById('previewTitle');
+  const openLink = document.getElementById('previewOpenLink');
+  if (!modal || !frame || !heading || !openLink) {
+    return;
+  }
+
+  heading.textContent = title || 'Canva Preview';
+  frame.src = embedUrl;
+  openLink.href = embedUrl;
+  modal.classList.add('open');
+}
+
+function closePreviewModal() {
+  const modal = document.getElementById('previewModal');
+  const frame = document.getElementById('previewFrame');
+  if (!modal || !frame) {
+    return;
+  }
+  frame.src = '';
+  modal.classList.remove('open');
+}
+
+function setupPreviewModal() {
+  const modal = document.createElement('div');
+  modal.id = 'previewModal';
+  modal.className = 'preview-modal';
+  modal.innerHTML = `
+    <div class="preview-modal-inner" role="dialog" aria-modal="true" aria-label="Template preview">
+      <div class="preview-modal-head">
+        <h3 id="previewTitle">Canva Preview</h3>
+        <button type="button" class="ghost-btn preview-close" id="previewCloseBtn">Close</button>
+      </div>
+      <iframe id="previewFrame" class="design-embed" loading="lazy" title="Design preview"></iframe>
+      <a id="previewOpenLink" class="cta preview-open-link" target="_blank" rel="noopener noreferrer">Open in Canva</a>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closePreviewModal();
+    }
+  });
+  document.getElementById('previewCloseBtn')?.addEventListener('click', closePreviewModal);
 }
 
 async function loadDesigns() {
@@ -202,6 +287,7 @@ async function init() {
   await loadDesigns();
   renderFilters();
   renderGrid();
+  setupPreviewModal();
   setupThemeShuffle();
   setupDualCursor();
 }

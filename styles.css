@@ -137,6 +137,12 @@ h1 {
   transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
+.ghost-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .cta {
   background: linear-gradient(100deg, var(--accent-a), #ff7a59);
   box-shadow: 0 7px 24px rgba(255, 46, 99, 0.4);
@@ -219,6 +225,16 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 0.7rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.preview-btn {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
 }
 
 .tag {
@@ -347,6 +363,49 @@ code {
 .status.error {
   border-color: rgba(255, 46, 99, 0.45);
   background: rgba(255, 46, 99, 0.12);
+}
+
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 2, 12, 0.68);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 2000;
+}
+
+.preview-modal.open {
+  display: flex;
+}
+
+.preview-modal-inner {
+  width: min(900px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  background: #120c28;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.preview-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.preview-modal .design-embed {
+  min-height: 540px;
+}
+
+.preview-open-link {
+  justify-self: end;
 }
 
 .footer {
