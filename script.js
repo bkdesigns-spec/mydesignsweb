@@ -50,10 +50,11 @@ function createCard(item) {
   const article = document.createElement('article');
   article.className = 'design-card';
   article.style.borderColor = `${item.accent}66`;
+  const embedUrl = normalizeCanvaEmbedUrl(item.embedUrl);
 
-  const visual = item.embedUrl
-    ? `<iframe class="design-embed" loading="lazy" src="${item.embedUrl}" title="${item.title}"></iframe>`
-    : `<div class="design-placeholder"><strong>${item.title}</strong><p>Add Canva embed URL in <code>script.js</code> for this card.</p></div>`;
+  const visual = embedUrl
+    ? `<iframe class="design-embed" loading="lazy" src="${embedUrl}" title="${item.title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+    : `<div class="design-placeholder"><strong>${item.title}</strong><p>Use a Canva public <code>/view?embed</code> link for this card.</p></div>`;
 
   article.innerHTML = `
     ${visual}
@@ -64,6 +65,29 @@ function createCard(item) {
   `;
 
   return article;
+}
+
+function normalizeCanvaEmbedUrl(url) {
+  if (!url) {
+    return '';
+  }
+
+  try {
+    const parsed = new URL(url);
+    const isCanva = parsed.hostname.includes('canva.com');
+    const hasDesignPath = parsed.pathname.includes('/design/');
+    if (!isCanva || !hasDesignPath) {
+      return '';
+    }
+
+    if (!parsed.pathname.endsWith('/view')) {
+      parsed.pathname = parsed.pathname.replace(/\/$/, '') + '/view';
+    }
+    parsed.searchParams.set('embed', '');
+    return parsed.toString();
+  } catch {
+    return '';
+  }
 }
 
 function renderFilters() {

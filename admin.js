@@ -22,13 +22,43 @@ function syncModeFields() {
 }
 
 function validateCanvaEmbed(url) {
+  return Boolean(normalizeCanvaEmbedUrl(url));
+}
+
+function normalizeCanvaEmbedUrl(url) {
   try {
     const parsed = new URL(url);
     const isCanva = parsed.hostname.includes('canva.com');
-    const hasEmbedHint = url.includes('embed') || url.includes('/view');
-    return isCanva && hasEmbedHint;
+    const hasDesignPath = parsed.pathname.includes('/design/');
+    if (!isCanva || !hasDesignPath) {
+      return '';
+    }
+
+    if (!parsed.pathname.endsWith('/view')) {
+      parsed.pathname = parsed.pathname.replace(/\/$/, '') + '/view';
+    }
+    parsed.searchParams.set('embed', '');
+    return parsed.toString();
   } catch {
-    return false;
+    return '';
+  }
+}
+
+async function fetchGitHub(endpoint, token, action, options = {}) {
+  try {
+    const response = await fetch(endpoint, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        ...(options.headers || {})
+      }
+    });
+    return response;
+  } catch (error) {
+    throw new Error(
+      `${action} failed before reaching GitHub (Failed to fetch). Check internet connection, browser extensions/VPN/proxy, and verify this page is served over http(s), not blocked by local browser security settings.`
+    );
   }
 }
 
@@ -168,7 +198,20 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  const newDesign = { title, category, accent, embedUrl };
+  const newDesign = {
+    title,
+    category,
+    accent,
+    embedUrl: normalizeCanvaEmbedUrl(embedUrl)
+  };
+
+  if (mode === 'manual') {
+    manualOutputNode.value = `${JSON.stringify(newDesign, null, 2)},`;
+    setStatus(
+      'Manual mode: copy the JSON object from the textarea and paste it into designs.json (inside the array), then commit the file in GitHub.'
+    );
+    return;
+  }
 
   if (mode === 'manual') {
     manualOutputNode.value = `${JSON.stringify(newDesign, null, 2)},`;
