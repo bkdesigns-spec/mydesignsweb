@@ -27,7 +27,14 @@ async function getDesignFile(owner, repo, branch, token) {
   });
 
   if (!response.ok) {
-    throw new Error(`Unable to read designs.json (${response.status})`);
+    let details = '';
+    try {
+      const errorData = await response.json();
+      details = errorData.message ? `: ${errorData.message}` : '';
+    } catch {
+      // no-op: keep generic response status only
+    }
+    throw new Error(`Unable to read designs.json (${response.status})${details}`);
   }
 
   return response.json();
@@ -62,10 +69,54 @@ async function commitDesigns(owner, repo, branch, token, sha, nextData) {
   });
 
   if (!response.ok) {
-    throw new Error(`Unable to commit designs.json (${response.status})`);
+    let details = '';
+    try {
+      const errorData = await response.json();
+      details = errorData.message ? `: ${errorData.message}` : '';
+    } catch {
+      // no-op: keep generic response status only
+    }
+    throw new Error(`Unable to commit designs.json (${response.status})${details}`);
   }
 
   return response.json();
+}
+
+async function appendDesignWithConflictRetry(owner, repo, branch, token, newDesign) {
+  const maxAttempts = 2;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const file = await getDesignFile(owner, repo, branch, token);
+    const currentData = decodeContent(file.content);
+
+    if (!Array.isArray(currentData)) {
+      throw new Error('designs.json is not an array.');
+    }
+
+    const alreadyExists = currentData.some(
+      (item) => item?.title === newDesign.title && item?.embedUrl === newDesign.embedUrl
+    );
+    if (alreadyExists) {
+      return { duplicated: true };
+    }
+
+    const nextData = [...currentData, newDesign];
+
+    try {
+      await commitDesigns(owner, repo, branch, token, file.sha, nextData);
+      return { duplicated: false };
+    } catch (error) {
+      lastError = error;
+      const isConflict = String(error?.message || '').includes('(409)');
+      if (!isConflict || attempt === maxAttempts) {
+        throw error;
+      }
+      setStatus('Detected concurrent update. Fetching latest file and retrying...');
+    }
+  }
+
+  throw lastError || new Error('Unable to append design data after retry.');
 }
 
 form.addEventListener('submit', async (event) => {
@@ -90,17 +141,12 @@ form.addEventListener('submit', async (event) => {
 
   try {
     setStatus('Valid input. Connecting to GitHub...');
-    const file = await getDesignFile(owner, repo, branch, token);
-    const currentData = decodeContent(file.content);
-
-    if (!Array.isArray(currentData)) {
-      throw new Error('designs.json is not an array.');
-    }
-
-    const nextData = [...currentData, newDesign];
-    await commitDesigns(owner, repo, branch, token, file.sha, nextData);
-
-    setStatus('Success! New design appended to designs.json and committed to your repo.');
+    const result = await appendDesignWithConflictRetry(owner, repo, branch, token, newDesign);
+    setStatus(
+      result.duplicated
+        ? 'This design already exists in designs.json; no commit was needed.'
+        : 'Success! New design appended to designs.json and committed to your repo.'
+    );
     form.reset();
   } catch (error) {
     setStatus(error.message || 'Something went wrong while appending design data.', true);
