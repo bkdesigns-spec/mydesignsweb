@@ -60,6 +60,13 @@
           <h2>Design Details</h2>
           <div class="form-grid">
             <label>
+              Update Mode
+              <select name="mode" id="mode">
+                <option value="github" selected>Direct GitHub Commit</option>
+                <option value="manual">Manual (Copy JSON)</option>
+              </select>
+            </label>
+            <label>
               Title
               <input name="title" maxlength="80" required />
             </label>
@@ -79,6 +86,9 @@
                 placeholder="https://www.canva.com/design/.../view?embed"
                 required
               />
+              <small class="hint">
+                Tip: use a public Canva design link. The uploader auto-converts valid design URLs to <code>/view?embed</code>.
+              </small>
             </label>
           </div>
 
@@ -89,6 +99,15 @@
           <p class="hint">
             Security note: token is used only in-browser for this request and not persisted by this page.
           </p>
+          <label class="span-2">
+            Manual Output (paste this object into designs.json)
+            <textarea
+              id="manualOutput"
+              rows="7"
+              readonly
+              placeholder="When Manual mode is selected, generated JSON will appear here."
+            ></textarea>
+          </label>
           <p id="status" role="status" aria-live="polite" class="status"></p>
         </form>
       </section>
