@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Canva Design — Canvascape</title>
+    <meta
+      name="description"
+      content="Validated Canva embed uploader that appends design data into designs.json in your GitHub repository."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="logo" href="index.html" aria-label="Canvascape home">
+        <span class="logo-mark"></span>
+        Canvascape
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#gallery">Gallery</a>
+      </nav>
+    </header>
+
+    <main class="admin-wrap">
+      <section class="admin-panel">
+        <h1>Add a Canva Embed</h1>
+        <p>
+          This page validates your input and commits a new object directly into
+          <code>designs.json</code> in your GitHub repository using the GitHub API.
+        </p>
+
+        <form id="designForm" novalidate>
+          <h2>Repository Access</h2>
+          <div class="form-grid">
+            <label>
+              GitHub Owner
+              <input name="owner" placeholder="your-username" required />
+            </label>
+            <label>
+              Repository
+              <input name="repo" placeholder="mydesignsweb" required />
+            </label>
+            <label>
+              Branch
+              <input name="branch" value="main" required />
+            </label>
+            <label>
+              PAT Token (contents:write)
+              <input name="token" type="password" required autocomplete="off" />
+            </label>
+          </div>
+
+          <h2>Design Details</h2>
+          <div class="form-grid">
+            <label>
+              Title
+              <input name="title" maxlength="80" required />
+            </label>
+            <label>
+              Category
+              <input name="category" maxlength="40" required />
+            </label>
+            <label>
+              Accent Color
+              <input name="accent" type="color" value="#ff2e63" required />
+            </label>
+            <label class="span-2">
+              Canva Embed URL
+              <input
+                name="embedUrl"
+                type="url"
+                placeholder="https://www.canva.com/design/.../view?embed"
+                required
+              />
+            </label>
+          </div>
+
+          <div class="hero-actions">
+            <button class="cta" type="submit">Validate & Append to designs.json</button>
+            <a class="ghost-btn" href="index.html">Cancel</a>
+          </div>
+          <p class="hint">
+            Security note: token is used only in-browser for this request and not persisted by this page.
+          </p>
+          <p id="status" role="status" aria-live="polite" class="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="admin.js" defer></script>
+  </body>
+</html>
