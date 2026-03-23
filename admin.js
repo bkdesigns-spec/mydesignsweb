@@ -79,24 +79,6 @@ async function commitDesigns(owner, repo, branch, token, sha, nextData) {
   return response.json();
 }
 
-async function fetchGitHub(endpoint, token, action, options = {}) {
-  try {
-    const response = await fetch(endpoint, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        ...(options.headers || {})
-      }
-    });
-    return response;
-  } catch (error) {
-    throw new Error(
-      `${action} failed before reaching GitHub (Failed to fetch). Check internet connection, browser extensions/VPN/proxy, and verify this page is served over http(s), not blocked by local browser security settings.`
-    );
-  }
-}
-
 async function appendDesignWithConflictRetry(owner, repo, branch, token, newDesign) {
   const maxAttempts = 2;
   let lastError = null;
