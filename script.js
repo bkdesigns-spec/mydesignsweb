@@ -1,4 +1,4 @@
-const designs = [
+const fallbackDesigns = [
   {
     title: 'Brand Story Slide Deck',
     category: 'Presentation',
@@ -24,6 +24,8 @@ const designs = [
     embedUrl: ''
   }
 ];
+
+let designs = [...fallbackDesigns];
 
 const colorThemes = [
   ['#0e0b1f', '#17112f', '#ff2e63', '#08d9d6', '#f9ed69', '#7c4dff'],
@@ -89,6 +91,22 @@ function renderGrid() {
   selected.forEach((item) => grid.appendChild(createCard(item)));
 }
 
+async function loadDesigns() {
+  try {
+    const response = await fetch('designs.json', { cache: 'no-store' });
+    if (!response.ok) {
+      return;
+    }
+
+    const fileDesigns = await response.json();
+    if (Array.isArray(fileDesigns) && fileDesigns.length > 0) {
+      designs = fileDesigns;
+    }
+  } catch {
+    // fallback designs are already loaded
+  }
+}
+
 function applyTheme(palette) {
   const root = document.documentElement;
   root.style.setProperty('--bg', palette[0]);
@@ -147,8 +165,9 @@ function setupDualCursor() {
   });
 }
 
-function init() {
+async function init() {
   year.textContent = new Date().getFullYear();
+  await loadDesigns();
   renderFilters();
   renderGrid();
   setupThemeShuffle();
