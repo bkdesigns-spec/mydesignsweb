@@ -1,4 +1,4 @@
-const fallbackDesigns = [
+const designs = [
   {
     title: 'Brand Story Slide Deck',
     category: 'Presentation',
@@ -10,6 +10,18 @@ const fallbackDesigns = [
     category: 'Social',
     accent: '#08d9d6',
     embedUrl: ''
+  },
+  {
+    title: 'Product Promo Poster',
+    category: 'Print',
+    accent: '#f9ed69',
+    embedUrl: ''
+  },
+  {
+    title: 'Event Invitation Series',
+    category: 'Marketing',
+    accent: '#7c4dff',
+    embedUrl: ''
   }
 ];
 
@@ -19,7 +31,6 @@ const colorThemes = [
   ['#1a0f13', '#28131a', '#ff4f79', '#45f0df', '#ffe066', '#8e7dff']
 ];
 
-let designs = [];
 let activeCategory = 'All';
 let reducedMotion = false;
 
@@ -28,25 +39,6 @@ const filters = document.querySelector('.filters');
 const year = document.getElementById('year');
 const shuffleBtn = document.getElementById('shuffleBtn');
 const toggleMotion = document.getElementById('toggleMotion');
-
-async function loadDesigns() {
-  try {
-    const response = await fetch('designs.json', { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`Failed to load data (${response.status})`);
-    }
-
-    const json = await response.json();
-    if (!Array.isArray(json)) {
-      throw new Error('designs.json must be an array');
-    }
-
-    designs = json;
-  } catch (error) {
-    designs = fallbackDesigns;
-    console.warn('Using fallback design data.', error);
-  }
-}
 
 function getCategories() {
   return ['All', ...new Set(designs.map((item) => item.category))];
@@ -59,7 +51,7 @@ function createCard(item) {
 
   const visual = item.embedUrl
     ? `<iframe class="design-embed" loading="lazy" src="${item.embedUrl}" title="${item.title}"></iframe>`
-    : `<div class="design-placeholder"><strong>${item.title}</strong><p>Add Canva embed URL in add page for this card.</p></div>`;
+    : `<div class="design-placeholder"><strong>${item.title}</strong><p>Add Canva embed URL in <code>script.js</code> for this card.</p></div>`;
 
   article.innerHTML = `
     ${visual}
@@ -155,9 +147,8 @@ function setupDualCursor() {
   });
 }
 
-async function init() {
+function init() {
   year.textContent = new Date().getFullYear();
-  await loadDesigns();
   renderFilters();
   renderGrid();
   setupThemeShuffle();

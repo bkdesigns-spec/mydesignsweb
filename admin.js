@@ -17,16 +17,17 @@ function validateCanvaEmbed(url) {
   }
 }
 
-async function getDesignFile(owner, repo, branch) {
+async function getDesignFile(owner, repo, branch, token) {
   const endpoint = `https://api.github.com/repos/${owner}/${repo}/contents/designs.json?ref=${branch}`;
   const response = await fetch(endpoint, {
     headers: {
+      Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json'
     }
   });
 
   if (!response.ok) {
-    throw new Error(`Unable to read designs.json (${response.status}). Check owner/repo/branch.`);
+    throw new Error(`Unable to read designs.json (${response.status})`);
   }
 
   return response.json();
@@ -61,14 +62,10 @@ async function commitDesigns(owner, repo, branch, token, sha, nextData) {
   });
 
   if (!response.ok) {
-    throw new Error(`Unable to commit designs.json (${response.status}). Check PAT permission contents:write.`);
+    throw new Error(`Unable to commit designs.json (${response.status})`);
   }
 
   return response.json();
-}
-
-function failedFetchHint() {
-  return 'Network blocked request. Open from GitHub Pages (not file://), disable strict tracker blocking for this page, and confirm internet access.';
 }
 
 form.addEventListener('submit', async (event) => {
@@ -84,11 +81,6 @@ form.addEventListener('submit', async (event) => {
   const accent = String(data.get('accent') || '').trim();
   const embedUrl = String(data.get('embedUrl') || '').trim();
 
-  if (!token) {
-    setStatus('Token is required for writing to GitHub.', true);
-    return;
-  }
-
   if (!validateCanvaEmbed(embedUrl)) {
     setStatus('Please enter a valid Canva embed/view URL.', true);
     return;
@@ -98,7 +90,7 @@ form.addEventListener('submit', async (event) => {
 
   try {
     setStatus('Valid input. Connecting to GitHub...');
-    const file = await getDesignFile(owner, repo, branch);
+    const file = await getDesignFile(owner, repo, branch, token);
     const currentData = decodeContent(file.content);
 
     if (!Array.isArray(currentData)) {
@@ -111,7 +103,6 @@ form.addEventListener('submit', async (event) => {
     setStatus('Success! New design appended to designs.json and committed to your repo.');
     form.reset();
   } catch (error) {
-    const isFailedFetch = error instanceof TypeError && error.message === 'Failed to fetch';
-    setStatus(isFailedFetch ? failedFetchHint() : error.message || 'Something went wrong.', true);
+    setStatus(error.message || 'Something went wrong while appending design data.', true);
   }
 });
