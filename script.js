@@ -45,8 +45,9 @@ const toggleMotion = document.getElementById('toggleMotion');
 function getCategories() {
   const options = [{ key: 'all', label: 'All' }];
   const seen = new Set(['all']);
+  const visibleDesigns = designs.filter((item) => Boolean(normalizeCanvaEmbedUrl(item?.embedUrl)));
 
-  designs.forEach((item) => {
+  visibleDesigns.forEach((item) => {
     const label = normalizeCategory(item?.category);
     const key = getCategoryKey(label);
     if (!seen.has(key)) {
@@ -83,8 +84,7 @@ function createCard(item) {
   const previewBtn = document.createElement('button');
   previewBtn.type = 'button';
   previewBtn.className = 'ghost-btn preview-btn';
-  previewBtn.textContent = embedUrl ? 'Preview' : 'No Preview';
-  previewBtn.disabled = !embedUrl;
+  previewBtn.textContent = 'Preview';
   previewBtn.addEventListener('click', () => openPreviewModal(embedUrl, item.title));
   actions.appendChild(previewBtn);
 
@@ -147,10 +147,22 @@ function renderFilters() {
 
 function renderGrid() {
   grid.innerHTML = '';
+  const visibleDesigns = designs.filter((item) => Boolean(normalizeCanvaEmbedUrl(item?.embedUrl)));
   const selected =
     activeCategory === 'all'
-      ? designs
-      : designs.filter((item) => getCategoryKey(normalizeCategory(item?.category)) === activeCategory);
+      ? visibleDesigns
+      : visibleDesigns.filter(
+          (item) => getCategoryKey(normalizeCategory(item?.category)) === activeCategory
+        );
+
+  if (selected.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.innerHTML =
+      '<strong>No templates found.</strong><p>Try a different filter or add a valid public Canva embed URL.</p>';
+    grid.appendChild(empty);
+    return;
+  }
 
   selected.forEach((item) => grid.appendChild(createCard(item)));
 }
