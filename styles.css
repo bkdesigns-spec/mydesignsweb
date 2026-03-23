@@ -266,6 +266,16 @@ code {
   margin-bottom: 0.35rem;
 }
 
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.preview-btn {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+}
+
 .tag {
   font-size: 0.76rem;
   border-radius: 999px;
