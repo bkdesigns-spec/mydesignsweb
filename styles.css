@@ -296,6 +296,12 @@ code {
   font: inherit;
 }
 
+.admin-panel input:disabled,
+.admin-panel select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .admin-panel input:focus,
 .admin-panel select:focus,
 .admin-panel textarea:focus {
@@ -312,6 +318,22 @@ code {
   color: var(--muted);
   font-size: 0.9rem;
   margin: 0.9rem 0 0.6rem;
+}
+
+.admin-panel small.hint {
+  margin: 0.2rem 0 0;
+}
+
+.preview-panel {
+  margin: 0.5rem 0 1rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.preview-panel .design-embed {
+  min-height: 320px;
 }
 
 .status {

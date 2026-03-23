@@ -43,14 +43,15 @@ const shuffleBtn = document.getElementById('shuffleBtn');
 const toggleMotion = document.getElementById('toggleMotion');
 
 function getCategories() {
-  return ['All', ...new Set(designs.map((item) => item.category))];
+  return ['All', ...new Set(designs.map((item) => normalizeCategory(item?.category)))];
 }
 
 function createCard(item) {
   const article = document.createElement('article');
   article.className = 'design-card';
-  article.style.borderColor = `${item.accent}66`;
+  article.style.borderColor = `${item.accent || '#7c4dff'}66`;
   const embedUrl = normalizeCanvaEmbedUrl(item.embedUrl);
+  const category = normalizeCategory(item.category);
 
   const visual = embedUrl
     ? `<iframe class="design-embed" loading="lazy" src="${embedUrl}" title="${item.title}" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
@@ -60,7 +61,7 @@ function createCard(item) {
     ${visual}
     <div class="design-meta">
       <h3>${item.title}</h3>
-      <span class="tag" style="background:${item.accent}33; border:1px solid ${item.accent}88">${item.category}</span>
+      <span class="tag" style="background:${item.accent || '#7c4dff'}33; border:1px solid ${item.accent || '#7c4dff'}88">${category}</span>
     </div>
   `;
 
@@ -90,6 +91,11 @@ function normalizeCanvaEmbedUrl(url) {
   }
 }
 
+function normalizeCategory(category) {
+  const value = String(category || '').trim();
+  return value || 'Uncategorized';
+}
+
 function renderFilters() {
   filters.innerHTML = '';
 
@@ -110,7 +116,9 @@ function renderFilters() {
 function renderGrid() {
   grid.innerHTML = '';
   const selected =
-    activeCategory === 'All' ? designs : designs.filter((item) => item.category === activeCategory);
+    activeCategory === 'All'
+      ? designs
+      : designs.filter((item) => normalizeCategory(item?.category) === activeCategory);
 
   selected.forEach((item) => grid.appendChild(createCard(item)));
 }

@@ -2,6 +2,8 @@ const form = document.getElementById('designForm');
 const statusNode = document.getElementById('status');
 const modeNode = document.getElementById('mode');
 const manualOutputNode = document.getElementById('manualOutput');
+const previewBtn = document.getElementById('previewBtn');
+const previewPanel = document.getElementById('previewPanel');
 
 function setStatus(message, isError = false) {
   statusNode.textContent = message;
@@ -19,6 +21,26 @@ function syncModeFields() {
       }
     }
   });
+}
+
+function renderPreview(rawUrl) {
+  const embedUrl = normalizeCanvaEmbedUrl(rawUrl);
+  if (!embedUrl) {
+    previewPanel.innerHTML =
+      '<p class="hint">Preview unavailable. Enter a valid public Canva design URL.</p>';
+    return;
+  }
+
+  previewPanel.innerHTML = `
+    <iframe
+      class="design-embed"
+      loading="lazy"
+      src="${embedUrl}"
+      title="Canva preview"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+    <p class="hint">Using embed URL: <code>${embedUrl}</code></p>
+  `;
 }
 
 function validateCanvaEmbed(url) {
@@ -41,24 +63,6 @@ function normalizeCanvaEmbedUrl(url) {
     return parsed.toString();
   } catch {
     return '';
-  }
-}
-
-async function fetchGitHub(endpoint, token, action, options = {}) {
-  try {
-    const response = await fetch(endpoint, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        ...(options.headers || {})
-      }
-    });
-    return response;
-  } catch (error) {
-    throw new Error(
-      `${action} failed before reaching GitHub (Failed to fetch). Check internet connection, browser extensions/VPN/proxy, and verify this page is served over http(s), not blocked by local browser security settings.`
-    );
   }
 }
 
@@ -217,14 +221,6 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  if (mode === 'manual') {
-    manualOutputNode.value = `${JSON.stringify(newDesign, null, 2)},`;
-    setStatus(
-      'Manual mode: copy the JSON object from the textarea and paste it into designs.json (inside the array), then commit the file in GitHub.'
-    );
-    return;
-  }
-
   try {
     setStatus('Valid input. Connecting to GitHub...');
     const result = await appendDesignWithConflictRetry(owner, repo, branch, token, newDesign);
@@ -244,6 +240,11 @@ modeNode?.addEventListener('change', () => {
     manualOutputNode.value = '';
   }
   syncModeFields();
+});
+
+previewBtn?.addEventListener('click', () => {
+  const embedInput = form.elements.namedItem('embedUrl');
+  renderPreview(embedInput?.value || '');
 });
 
 syncModeFields();
