@@ -6,31 +6,22 @@ A bold, colorful, dynamic, and responsive website for showcasing your Canva desi
 
 1. Clone the repo.
 2. Open `index.html` directly, or serve it locally with any static server.
-3. Edit `designs.json` manually or use the built-in `add-design.html` uploader page.
+3. Edit `script.js` and update the `designs` array.
 
-## Add Canva embed links (manual)
+## Add Canva embed links
 
-In `designs.json`, each object looks like this:
+In `script.js`, each item has an `embedUrl` field:
 
-```json
+```js
 {
-  "title": "My Design",
-  "category": "Social",
-  "accent": "#08d9d6",
-  "embedUrl": "https://www.canva.com/design/.../view?embed"
+  title: 'My Design',
+  category: 'Social',
+  accent: '#08d9d6',
+  embedUrl: 'https://www.canva.com/design/.../view?embed'
 }
 ```
 
 If `embedUrl` is empty, a placeholder card appears automatically.
-
-## Add Canva embed links (validated uploader page)
-
-1. Open `add-design.html` from your deployed site.
-2. Fill repo details and a GitHub PAT token with `contents:write` scope.
-3. Fill design fields (title, category, accent, Canva embed URL).
-4. Submit to append a new object directly into `designs.json` on your selected branch.
-
-> Security: token is only used in browser for API requests and not stored by the page.
 
 ## Deploy to GitHub Pages
 

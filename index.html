@@ -29,7 +29,6 @@
         <a href="#gallery">Gallery</a>
         <a href="#workflow">Workflow</a>
         <a href="#contact">Contact</a>
-        <a href="add-design.html">Add Design</a>
       </nav>
       <button id="shuffleBtn" class="ghost-btn" type="button">Shuffle Colors</button>
     </header>
@@ -52,8 +51,8 @@
         <div class="section-heading">
           <h2>Design Gallery</h2>
           <p>
-            Gallery data is loaded from <code>designs.json</code>. Use <a href="add-design.html">Add Design</a>
-            page to validate and append Canva embeds directly into your GitHub repo.
+            Add your Canva embed links in <code>script.js</code> (the <code>designs</code> array), and each card
+            will render automatically.
           </p>
         </div>
 
@@ -65,10 +64,10 @@
       <section id="workflow" class="workflow">
         <h2>How to add your Canva embeds</h2>
         <ol>
-          <li>Open <a href="add-design.html">Add Design</a> page.</li>
-          <li>Enter repo + token details once and your design info.</li>
-          <li>Submit form to append data into <code>designs.json</code> on your repo.</li>
-          <li>GitHub Pages updates automatically after commit deploy.</li>
+          <li>Open <code>script.js</code>.</li>
+          <li>Add a new object in the <code>designs</code> array.</li>
+          <li>Paste your Canva embed URL in <code>embedUrl</code>.</li>
+          <li>Optional: set <code>accent</code> and <code>category</code> for filtering and style.</li>
         </ol>
       </section>
     </main>
