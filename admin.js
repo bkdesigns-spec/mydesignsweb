@@ -1,9 +1,24 @@
 const form = document.getElementById('designForm');
 const statusNode = document.getElementById('status');
+const modeNode = document.getElementById('mode');
+const manualOutputNode = document.getElementById('manualOutput');
 
 function setStatus(message, isError = false) {
   statusNode.textContent = message;
   statusNode.classList.toggle('error', isError);
+}
+
+function syncModeFields() {
+  const isManual = modeNode?.value === 'manual';
+  ['owner', 'repo', 'branch', 'token'].forEach((name) => {
+    const field = form.elements.namedItem(name);
+    if (field && 'required' in field) {
+      field.required = !isManual;
+      if ('disabled' in field) {
+        field.disabled = isManual;
+      }
+    }
+  });
 }
 
 function validateCanvaEmbed(url) {
@@ -120,6 +135,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const data = new FormData(form);
 
+  const mode = String(data.get('mode') || 'github').trim();
   const owner = String(data.get('owner') || '').trim();
   const repo = String(data.get('repo') || '').trim();
   const branch = String(data.get('branch') || '').trim();
@@ -136,6 +152,14 @@ form.addEventListener('submit', async (event) => {
 
   const newDesign = { title, category, accent, embedUrl };
 
+  if (mode === 'manual') {
+    manualOutputNode.value = `${JSON.stringify(newDesign, null, 2)},`;
+    setStatus(
+      'Manual mode: copy the JSON object from the textarea and paste it into designs.json (inside the array), then commit the file in GitHub.'
+    );
+    return;
+  }
+
   try {
     setStatus('Valid input. Connecting to GitHub...');
     const result = await appendDesignWithConflictRetry(owner, repo, branch, token, newDesign);
@@ -149,3 +173,12 @@ form.addEventListener('submit', async (event) => {
     setStatus(error.message || 'Something went wrong while appending design data.', true);
   }
 });
+
+modeNode?.addEventListener('change', () => {
+  if (modeNode.value !== 'manual') {
+    manualOutputNode.value = '';
+  }
+  syncModeFields();
+});
+
+syncModeFields();
