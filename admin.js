@@ -18,13 +18,10 @@ function validateCanvaEmbed(url) {
 }
 
 async function getDesignFile(owner, repo, branch, token) {
-  const endpoint = `https://api.github.com/repos/${owner}/${repo}/contents/designs.json?ref=${branch}`;
-  const response = await fetch(endpoint, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json'
-    }
-  });
+  const endpoint = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(
+    repo
+  )}/contents/designs.json?ref=${encodeURIComponent(branch)}`;
+  const response = await fetchGitHub(endpoint, token, 'read designs.json');
 
   if (!response.ok) {
     let details = '';
@@ -50,7 +47,9 @@ function encodeContent(json) {
 }
 
 async function commitDesigns(owner, repo, branch, token, sha, nextData) {
-  const endpoint = `https://api.github.com/repos/${owner}/${repo}/contents/designs.json`;
+  const endpoint = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(
+    repo
+  )}/contents/designs.json`;
   const body = {
     message: `chore: add design - ${nextData[nextData.length - 1].title}`,
     content: encodeContent(nextData),
@@ -58,11 +57,9 @@ async function commitDesigns(owner, repo, branch, token, sha, nextData) {
     branch
   };
 
-  const response = await fetch(endpoint, {
+  const response = await fetchGitHub(endpoint, token, 'commit designs.json', {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(body)
