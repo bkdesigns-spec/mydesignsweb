@@ -80,6 +80,10 @@ async function fetchGitHub(endpoint, token, action, options = {}) {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.fetchGitHub = fetchGitHub;
+}
+
 async function getDesignFile(owner, repo, branch, token) {
   const endpoint = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(
     repo
