@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvascape — Canva Design Showcase</title>
+    <meta
+      name="description"
+      content="A bold, colorful, responsive showcase site for Canva designs with dynamic embeds."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="logo" href="#home" aria-label="Canvascape home">
+        <span class="logo-mark"></span>
+        Canvascape
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="#gallery">Gallery</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#contact">Contact</a>
+        <a href="add-design.html">Add Design</a>
+      </nav>
+      <button id="shuffleBtn" class="ghost-btn" type="button">Shuffle Colors</button>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <p class="eyebrow">Canva-crafted visuals</p>
+        <h1>Bold ideas, colorful stories, and designs that pop.</h1>
+        <p class="hero-copy">
+          This dynamic portfolio is built for your Canva work. Add or edit your embed links in one place,
+          and your gallery updates instantly.
+        </p>
+        <div class="hero-actions">
+          <a href="#gallery" class="cta">Explore Designs</a>
+          <button id="toggleMotion" class="ghost-btn" type="button">Reduce Motion</button>
+        </div>
+      </section>
+
+      <section id="gallery" class="gallery-section">
+        <div class="section-heading">
+          <h2>Design Gallery</h2>
+          <p>
+            Gallery data is loaded from <code>designs.json</code>. Use <a href="add-design.html">Add Design</a>
+            page to validate and append Canva embeds directly into your GitHub repo.
+          </p>
+        </div>
+
+        <div class="filters" role="toolbar" aria-label="Filter designs by category"></div>
+
+        <div id="designGrid" class="design-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="workflow" class="workflow">
+        <h2>How to add your Canva embeds</h2>
+        <ol>
+          <li>Open <a href="add-design.html">Add Design</a> page.</li>
+          <li>Enter repo + token details once and your design info.</li>
+          <li>Submit form to append data into <code>designs.json</code> on your repo.</li>
+          <li>GitHub Pages updates automatically after commit deploy.</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer id="contact" class="footer">
+      <p>© <span id="year"></span> Canvascape • Designed to shine on GitHub Pages.</p>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
