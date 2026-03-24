@@ -121,6 +121,12 @@ h1 {
   margin: 1rem 0 1.5rem;
 }
 
+.hero-note {
+  margin: -0.6rem 0 1.2rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .hero-actions {
   display: flex;
   gap: 0.8rem;
@@ -266,16 +272,6 @@ code {
   margin-bottom: 0.35rem;
 }
 
-.card-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.preview-btn {
-  padding: 0.5rem 0.9rem;
-  font-size: 0.85rem;
-}
-
 .tag {
   font-size: 0.76rem;
   border-radius: 999px;
@@ -297,6 +293,14 @@ code {
   margin: 0.7rem 0 0;
   padding-inline-start: 1.15rem;
   color: var(--muted);
+}
+
+.feature-list {
+  margin: 0.7rem 0 0;
+  padding-inline-start: 1.15rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.55rem;
 }
 
 .admin-wrap {
@@ -452,6 +456,15 @@ code {
   text-align: center;
   color: var(--muted);
   padding: 1.2rem;
+}
+
+.footer h2 {
+  margin-bottom: 0.6rem;
+}
+
+.footer p {
+  max-width: 62ch;
+  margin: 0.5rem auto;
 }
 
 .cursor-dot,

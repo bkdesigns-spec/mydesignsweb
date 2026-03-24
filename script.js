@@ -287,7 +287,7 @@ function setupDualCursor() {
 
   toggleMotion.addEventListener('click', () => {
     reducedMotion = !reducedMotion;
-    toggleMotion.textContent = reducedMotion ? 'Enable Motion' : 'Reduce Motion';
+    toggleMotion.textContent = reducedMotion ? 'Enable Effects' : 'Disable Effects';
     if (!reducedMotion) {
       animate();
     }
