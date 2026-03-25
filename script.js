@@ -42,6 +42,17 @@ const year = document.getElementById('year');
 const shuffleBtn = document.getElementById('shuffleBtn');
 const toggleMotion = document.getElementById('toggleMotion');
 
+function removePublicAddDesignLinks() {
+  const navLinks = document.querySelectorAll('.topnav a');
+  navLinks.forEach((link) => {
+    const label = String(link.textContent || '').trim().toLowerCase();
+    const href = String(link.getAttribute('href') || '').trim().toLowerCase();
+    if (label === 'add design' || href.includes('add-design.html')) {
+      link.remove();
+    }
+  });
+}
+
 function getCategories() {
   const options = [{ key: 'all', label: 'All' }];
   const seen = new Set(['all']);
@@ -295,6 +306,7 @@ function setupDualCursor() {
 }
 
 async function init() {
+  removePublicAddDesignLinks();
   year.textContent = new Date().getFullYear();
   await loadDesigns();
   renderFilters();
