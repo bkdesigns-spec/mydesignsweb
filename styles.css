@@ -475,6 +475,8 @@ code {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 999;
+  will-change: transform, opacity;
+  transition: opacity 0.15s ease;
 }
 
 .cursor-dot {
@@ -490,6 +492,11 @@ code {
   border: 2px solid #ff2a2a;
   border-radius: 50%;
   mix-blend-mode: screen;
+}
+
+body.use-native-cursor,
+body.use-native-cursor * {
+  cursor: auto !important;
 }
 
 @media (max-width: 720px) {
