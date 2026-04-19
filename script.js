@@ -279,6 +279,21 @@ function setupDualCursor() {
   let mouseY = window.innerHeight / 2;
   let ringX = mouseX;
   let ringY = mouseY;
+  let frameId = null;
+  let cursorEnabled = true;
+
+  const easing = 0.4;
+  const settleThreshold = 0.2;
+
+  function queueRender() {
+    if (!cursorEnabled) {
+      return;
+    }
+    if (frameId !== null) {
+      return;
+    }
+    frameId = requestAnimationFrame(renderCursor);
+  }
 
   const easing = 0.22;
 

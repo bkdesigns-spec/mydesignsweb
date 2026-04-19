@@ -494,6 +494,11 @@ code {
   mix-blend-mode: screen;
 }
 
+body.use-native-cursor,
+body.use-native-cursor * {
+  cursor: auto !important;
+}
+
 @media (max-width: 720px) {
   body {
     cursor: auto;
