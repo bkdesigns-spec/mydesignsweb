@@ -258,6 +258,10 @@ function applyTheme(palette) {
 }
 
 function setupThemeShuffle() {
+  if (!shuffleBtn) {
+    return;
+  }
+
   shuffleBtn.addEventListener('click', () => {
     const random = colorThemes[Math.floor(Math.random() * colorThemes.length)];
     applyTheme(random);
@@ -296,13 +300,15 @@ function setupDualCursor() {
 
   animate();
 
-  toggleMotion.addEventListener('click', () => {
-    reducedMotion = !reducedMotion;
-    toggleMotion.textContent = reducedMotion ? 'Enable Effects' : 'Disable Effects';
-    if (!reducedMotion) {
-      animate();
-    }
-  });
+  if (toggleMotion) {
+    toggleMotion.addEventListener('click', () => {
+      reducedMotion = !reducedMotion;
+      toggleMotion.textContent = reducedMotion ? 'Enable Effects' : 'Disable Effects';
+      if (!reducedMotion) {
+        animate();
+      }
+    });
+  }
 }
 
 async function init() {
