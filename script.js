@@ -258,6 +258,10 @@ function applyTheme(palette) {
 }
 
 function setupThemeShuffle() {
+  if (!shuffleBtn) {
+    return;
+  }
+
   shuffleBtn.addEventListener('click', () => {
     const random = colorThemes[Math.floor(Math.random() * colorThemes.length)];
     applyTheme(random);
@@ -276,33 +280,50 @@ function setupDualCursor() {
   let ringX = mouseX;
   let ringY = mouseY;
 
-  const easing = 0.18;
+  const easing = 0.22;
 
-  window.addEventListener('mousemove', (event) => {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+    },
+    { passive: true }
+  );
 
-    dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-  });
+  function renderCursor() {
+    dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
 
-  function animate() {
-    if (!reducedMotion) {
+    if (reducedMotion) {
+      ringX = mouseX;
+      ringY = mouseY;
+    } else {
       ringX += (mouseX - ringX) * easing;
       ringY += (mouseY - ringY) * easing;
-      ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
-      requestAnimationFrame(animate);
     }
+
+    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+    requestAnimationFrame(renderCursor);
   }
 
-  animate();
+  renderCursor();
 
-  toggleMotion.addEventListener('click', () => {
-    reducedMotion = !reducedMotion;
-    toggleMotion.textContent = reducedMotion ? 'Enable Effects' : 'Disable Effects';
-    if (!reducedMotion) {
-      animate();
-    }
+  window.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
   });
+
+  window.addEventListener('mouseenter', () => {
+    dot.style.opacity = '1';
+    ring.style.opacity = '1';
+  });
+
+  if (toggleMotion) {
+    toggleMotion.addEventListener('click', () => {
+      reducedMotion = !reducedMotion;
+      toggleMotion.textContent = reducedMotion ? 'Enable Effects' : 'Disable Effects';
+    });
+  }
 }
 
 async function init() {
