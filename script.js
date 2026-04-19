@@ -295,40 +295,18 @@ function setupDualCursor() {
     frameId = requestAnimationFrame(renderCursor);
   }
 
-  function setCursorEnabled(enabled) {
-    if (cursorEnabled === enabled) {
-      return;
-    }
-
-    cursorEnabled = enabled;
-    dot.style.opacity = enabled ? '1' : '0';
-    ring.style.opacity = enabled ? '1' : '0';
-    document.body.classList.toggle('use-native-cursor', !enabled);
-
-    if (enabled) {
-      queueRender();
-    }
-  }
+  const easing = 0.22;
 
   window.addEventListener(
     'pointermove',
     (event) => {
       mouseX = event.clientX;
       mouseY = event.clientY;
-      const hoveredElement = document.elementFromPoint(mouseX, mouseY);
-      const overEmbed = Boolean(hoveredElement?.closest('.design-embed'));
-      setCursorEnabled(!overEmbed);
-      queueRender();
     },
     { passive: true }
   );
 
   function renderCursor() {
-    frameId = null;
-    if (!cursorEnabled) {
-      return;
-    }
-
     dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
 
     if (reducedMotion) {
@@ -340,15 +318,10 @@ function setupDualCursor() {
     }
 
     ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
-
-    const dx = Math.abs(mouseX - ringX);
-    const dy = Math.abs(mouseY - ringY);
-    if (dx > settleThreshold || dy > settleThreshold) {
-      queueRender();
-    }
+    requestAnimationFrame(renderCursor);
   }
 
-  queueRender();
+  renderCursor();
 
   window.addEventListener('mouseleave', () => {
     dot.style.opacity = '0';
@@ -356,12 +329,8 @@ function setupDualCursor() {
   });
 
   window.addEventListener('mouseenter', () => {
-    if (!cursorEnabled) {
-      return;
-    }
     dot.style.opacity = '1';
     ring.style.opacity = '1';
-    queueRender();
   });
 
   if (toggleMotion) {
