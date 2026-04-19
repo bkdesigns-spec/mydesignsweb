@@ -344,6 +344,9 @@ function setupDualCursor() {
     if (dx > settleThreshold || dy > settleThreshold) {
       queueRender();
     }
+
+    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+    requestAnimationFrame(renderCursor);
   }
 
   queueRender();
