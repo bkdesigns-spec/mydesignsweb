@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Canvascape</title>
+    <meta
+      name="description"
+      content="Get in touch with Canvascape for collaborations, portfolio support, and design showcase inquiries."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="contact-page">
+    <header class="topbar">
+      <a class="logo" href="index.html" aria-label="Canvascape home">
+        <span class="logo-mark"></span>
+        Canvascape
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#gallery">Gallery</a>
+        <a href="add-design.html">Add Design</a>
+      </nav>
+    </header>
+
+    <main class="contact-main">
+      <section class="contact-hero">
+        <p class="eyebrow">LET'S BUILD YOUR VISUAL PRESENCE</p>
+        <h1>Contact Canvascape</h1>
+        <p class="hero-copy">
+          Whether you need a polished portfolio, a fresh design system, or a custom Canva-powered showcase,
+          we’d love to hear from you.
+        </p>
+      </section>
+
+      <section class="contact-grid" aria-label="Contact options">
+        <article class="contact-card">
+          <h2>Direct Channels</h2>
+          <ul>
+            <li><strong>Email:</strong> <a href="mailto:hello@canvascape.design">hello@canvascape.design</a></li>
+            <li><strong>Instagram:</strong> <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">@canvascape.studio</a></li>
+            <li><strong>Response Time:</strong> Within 24 hours</li>
+          </ul>
+        </article>
+
+        <article class="contact-card">
+          <h2>What to Include</h2>
+          <ul>
+            <li>Project type (social, brand kit, deck, website)</li>
+            <li>Your timeline and launch date</li>
+            <li>Any style references or inspiration links</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="contact-form-wrap" aria-label="Contact form">
+        <h2>Send a Message</h2>
+        <form class="contact-form" action="mailto:hello@canvascape.design" method="post" enctype="text/plain">
+          <label>
+            Name
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            Project Type
+            <select name="project_type">
+              <option>Portfolio Website</option>
+              <option>Canva Template Pack</option>
+              <option>Social Media Kit</option>
+              <option>Brand Identity</option>
+            </select>
+          </label>
+          <label class="span-2">
+            Message
+            <textarea name="message" rows="6" placeholder="Tell us what you want to create." required></textarea>
+          </label>
+          <div class="contact-actions">
+            <button class="cta" type="submit">Send Message</button>
+            <a class="ghost-btn" href="index.html">Back to Home</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

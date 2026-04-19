@@ -42,17 +42,6 @@ const year = document.getElementById('year');
 const shuffleBtn = document.getElementById('shuffleBtn');
 const toggleMotion = document.getElementById('toggleMotion');
 
-function removePublicAddDesignLinks() {
-  const navLinks = document.querySelectorAll('.topnav a');
-  navLinks.forEach((link) => {
-    const label = String(link.textContent || '').trim().toLowerCase();
-    const href = String(link.getAttribute('href') || '').trim().toLowerCase();
-    if (label === 'add design' || href.includes('add-design.html')) {
-      link.remove();
-    }
-  });
-}
-
 function getCategories() {
   const options = [{ key: 'all', label: 'All' }];
   const seen = new Set(['all']);
@@ -295,18 +284,49 @@ function setupDualCursor() {
     frameId = requestAnimationFrame(renderCursor);
   }
 
-  const easing = 0.22;
+  function setCursorEnabled(enabled) {
+    if (cursorEnabled === enabled) {
+      return;
+    }
+
+    cursorEnabled = enabled;
+    dot.style.opacity = enabled ? '1' : '0';
+    ring.style.opacity = enabled ? '1' : '0';
+    document.body.classList.toggle('use-native-cursor', !enabled);
+
+    if (enabled) {
+      queueRender();
+    }
+  }
 
   window.addEventListener(
     'pointermove',
     (event) => {
       mouseX = event.clientX;
       mouseY = event.clientY;
+      queueRender();
     },
     { passive: true }
   );
 
+  document.addEventListener('pointerover', (event) => {
+    if (event.target instanceof Element && event.target.closest('.design-embed')) {
+      setCursorEnabled(false);
+    }
+  });
+
+  document.addEventListener('pointerout', (event) => {
+    if (event.target instanceof Element && event.target.closest('.design-embed')) {
+      setCursorEnabled(true);
+    }
+  });
+
   function renderCursor() {
+    frameId = null;
+    if (!cursorEnabled) {
+      return;
+    }
+
     dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
 
     if (reducedMotion) {
@@ -318,10 +338,18 @@ function setupDualCursor() {
     }
 
     ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+
+    const dx = Math.abs(mouseX - ringX);
+    const dy = Math.abs(mouseY - ringY);
+    if (dx > settleThreshold || dy > settleThreshold) {
+      queueRender();
+    }
+
+    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
     requestAnimationFrame(renderCursor);
   }
 
-  renderCursor();
+  queueRender();
 
   window.addEventListener('mouseleave', () => {
     dot.style.opacity = '0';
@@ -329,8 +357,12 @@ function setupDualCursor() {
   });
 
   window.addEventListener('mouseenter', () => {
+    if (!cursorEnabled) {
+      return;
+    }
     dot.style.opacity = '1';
     ring.style.opacity = '1';
+    queueRender();
   });
 
   if (toggleMotion) {
@@ -342,7 +374,6 @@ function setupDualCursor() {
 }
 
 async function init() {
-  removePublicAddDesignLinks();
   year.textContent = new Date().getFullYear();
   await loadDesigns();
   renderFilters();
